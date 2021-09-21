@@ -1,46 +1,44 @@
-function printRecords(recordIds) {
+var printRecords = (recordIds) => {
   if (Array.isArray(recordIds)) {
-    let filteredStudents = recordIds.map(function getStudentById(id) {
-      return studentRecords.find(function findStudenById(student) {
+    let filteredStudents = recordIds.map((id) => {
+      return studentRecords.find((student) => {
         return student.id == id ? student : undefined;
       });
     });
     return filteredStudents.sort(sortStudents).forEach(printStudentWithFormat);
   }
-}
+};
 
-function paidStudentsToEnroll() {
+var paidStudentsToEnroll = () => {
   let notYetUnrolled = studentRecords
-    .filter(function notYetUnrolled(student) {
+    .filter((student) => {
       if (!currentEnrollment.includes(student.id) && student.paid) {
         return student.id;
       }
     })
-    .map(function getIds(student) {
-      return student.id;
-    });
+    .map((student) => student.id);
   return [...currentEnrollment, ...notYetUnrolled];
-}
+};
 
-function remindUnpaid(recordIds) {
-  let remind = recordIds.filter(function getStudentById(id) {
-    return studentRecords.find(function findStudentById(student) {
+var remindUnpaid = (recordIds) => {
+  let remind = recordIds.filter((id) => {
+    return studentRecords.find((student) => {
       if (student.id == id && !student.paid) {
         return student;
       }
     });
   });
   printRecords(remind);
-}
+};
 
-function sortStudents(studentA, studentB) {
-  return studentA.name > studentB.name ? 1 : -1;
-}
-function printStudentWithFormat(student) {
+var sortStudents = (studentA, studentB) =>
+  studentA.name > studentB.name ? 1 : -1;
+
+var printStudentWithFormat = (student) => {
   console.log(
     `${student.name} (${student.id}): ${student.paid ? "Paid" : "Not Paid"}`
   );
-}
+};
 // ********************************
 
 var currentEnrollment = [410, 105, 664, 375];
