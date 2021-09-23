@@ -1,14 +1,24 @@
 // to convert a generator function add "*" before the function name
-function gentTest() {
+function* gentTest() {
   let x = 0;
   console.log(`start`);
-  x++;
+  yield x++;
   console.log(x);
   x++;
   console.log(x);
-  x++;
+  yield x++;
   console.log("end");
   return x;
 }
+/*
+  the next code use the method "next()"
+  to call the next "state" of the generator
+  it repeat sometimes to finish 
+  */
 
-gentTest();
+let gen = gentTest();
+
+console.log(gen.next());
+console.log(gen.next());
+
+console.log(gen.next());
