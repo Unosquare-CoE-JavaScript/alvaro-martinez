@@ -9,9 +9,16 @@ let swapi = function (num) {
     })
     .then(function (obj) {
       console.log(obj);
+      return fetch(obj.homeworld);
+    })
+    .then((hwd) => {
+      return hwd.json();
+    })
+    .then((hw) => {
+      console.log(hw);
     });
 };
 
-swapi(1)
+swapi(1);
 
 console.log("other commands");
