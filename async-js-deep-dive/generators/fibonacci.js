@@ -1,4 +1,4 @@
-const fibonacci = function (len, nums = [0, 1]) {
+const fibonacci = function* (len, nums = [0, 1]) {
   let [num1, num2] = nums;
   let next;
   let cnt = 2;
@@ -9,6 +9,7 @@ const fibonacci = function (len, nums = [0, 1]) {
     num2 = next;
     nums.push(next);
     cnt++;
+    yield nums;
   }
   return nums;
 };
