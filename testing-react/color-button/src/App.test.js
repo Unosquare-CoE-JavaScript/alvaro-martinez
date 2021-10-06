@@ -20,3 +20,13 @@ test("button has correct inital color", () => {
 
 //   const colorButton = screen.getByRole("button", { name: "change to  blue" });
 // });
+
+test("inital conditions", () => {
+  render(<App />);
+  const colorButton = screen.getByRole("button", { name: "change to blue" });
+  expect(colorButton).toBeEnabled();
+
+  // check tthat the checkbox start out unchecked
+  const checkbox = screen.getByRole("checkbox");
+  expect(checkbox).not.toBeChecked(   );
+});
