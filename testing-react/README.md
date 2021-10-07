@@ -29,16 +29,38 @@ Jest
 unit testing vs functional testing
 unit: isolated, mock dependencies, test internals
 
-+ very easy to pinpoint failures
+- very easy to pinpoint failures
 
-- Further from how user interact with sw
-- more likely to breack with refactoring
+* Further from how user interact with sw
+* more likely to breack with refactoring
 
-functional: include all relevant units, test behavior 
-+ close to how users interact with software 
-+ robust tests
+functional: include all relevant units, test behavior
 
-- more difficult ti debug 
+- close to how users interact with software
+- robust tests
 
+* more difficult to debug
 
+---
+
+### unit testing functions
+
+functions separate from components
+
+- used by several components
+- complex logic
+
+unit test if
+
+- complex logi difficult to test via functional tests
+- top many edges cases
+
+---
+ESlint 
+
+- popular linter 
+- keep code consistent , especially for multi-eng projects
+- cath erros in code
+  - using variables before defining
+  - importing from nonexisting file 
 
