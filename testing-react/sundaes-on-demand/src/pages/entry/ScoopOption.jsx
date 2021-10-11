@@ -7,7 +7,6 @@ export default function ScoopOption({ name, imagePath }) {
         style={{ width: '75%' }}
         src={`http://localhost:3030/${imagePath}`}
         alt={`${name} scoop`}
-        srcset=''
       />
     </Col>
   );
