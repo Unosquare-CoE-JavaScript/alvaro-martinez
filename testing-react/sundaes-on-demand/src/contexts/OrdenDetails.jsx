@@ -36,6 +36,7 @@ export function OrderDetailsProvider(props) {
     toppings: zeroCurrency,
     grandTotal: zeroCurrency,
   });
+
   useEffect(() => {
     const scoopSubtotal = calculateSubtotal('scoops', optionCounts);
     const toppingSubtotal = calculateSubtotal('toppings', optionCounts);
@@ -56,9 +57,17 @@ export function OrderDetailsProvider(props) {
       optionCountsMap.set(itemName, parseInt(newItemCount));
       setOptionCounts(newOptionsCounts);
     }
+
+    function resetOrder() {
+      setOptionCounts({
+        scoops: new Map(),
+        toppings: new Map(),
+      });
+    }
     // getter: object containing options counts for scoops and toppings, subttotal
     // setter: updateOptionCount
-    return [{ ...optionCounts, totals }, updateItems];
+    return [{ ...optionCounts, totals }, updateItems, resetOrder];
   }, [optionCounts, totals]);
+
   return <OrderDetails.Provider value={value} {...props} />;
 }

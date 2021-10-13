@@ -2,7 +2,6 @@ import { rest } from 'msw';
 
 import OrderEntry from '../OrderEntry';
 import { server } from '../../../mocks/server';
-import { OrderDetailsProvider } from '../../../contexts/OrdenDetails';
 import {
   render,
   waitFor,
@@ -18,7 +17,7 @@ test('should handle error for scoops and toppings routes', async () => {
       return res(ctx.status(500));
     })
   );
-  render(<OrderEntry />);
+  render(<OrderEntry setOrderPhase={jest.fn()} />);
 
   await waitFor(async () => {
     const alerts = await screen.findAllByRole('alert');

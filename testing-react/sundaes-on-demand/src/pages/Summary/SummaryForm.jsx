@@ -5,7 +5,7 @@ import Popover from 'react-bootstrap/Popover';
 import FormCheck from 'react-bootstrap/FormCheck';
 import Button from 'react-bootstrap/Button';
 
-export default function SummaryForm() {
+export default function SummaryForm({ setOrderPhase }) {
   const [disabled, setDisabled] = useState(false);
 
   const popover = (
@@ -23,8 +23,13 @@ export default function SummaryForm() {
     </span>
   );
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setOrderPhase('completed');
+  };
+
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <Form.Group controlId='ters-and-conditions'>
         <FormCheck
           type='checkbox'
