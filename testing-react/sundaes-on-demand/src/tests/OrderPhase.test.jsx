@@ -45,11 +45,20 @@ test('should', async () => {
   });
   userEvent.click(orderConfirmButton);
 
+  //  expect "loading" to show
+
+  const loading = screen.getByText(/loading/i);
+  expect(loading).toBeInTheDocument();
+
   //confirm order number on confirmation page
   const confirmPageText = await screen.findByRole('heading', {
     name: /thank you/i,
   });
   expect(confirmPageText).toBeInTheDocument();
+
+  // expect to loading dissapeared
+  const notLoading = screen.queryByText(/loading/i);
+  expect(notLoading).not.toBeInTheDocument();
 
   const orderNumber = await screen.findByRole('heading', { name: /123/i });
   expect(orderNumber).toBeInTheDocument();
@@ -65,4 +74,27 @@ test('should', async () => {
   expect(toppingsTotal).toBeInTheDocument();
 
   // do web need to wat anything to avoid test errors
+});
+
+test('should toppings header is not on summary page if no toppings ordered', async () => {
+  render(<App />);
+
+  const scoopVanilla = await screen.findByRole('spinbutton', {
+    name: /vanilla/i,
+  });
+  userEvent.clear(scoopVanilla);
+  userEvent.type(scoopVanilla, '2');
+
+  const orderButton = screen.getByRole('button', { expect: /order sundae/i });
+  userEvent.click(orderButton);
+
+  const scoopHeading = await screen.findByRole('heading', {
+    name: 'Scoops: $4.00',
+  });
+  expect(scoopHeading).toBeInTheDocument();
+
+  const toppingHeading = screen.queryByRole('heading', {
+    name: 'Toppings: $0.00',
+  });
+  expect(toppingHeading).not.toBeInTheDocument();
 });
