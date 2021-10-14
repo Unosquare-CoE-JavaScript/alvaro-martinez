@@ -56,11 +56,63 @@ unit test if
 - top many edges cases
 
 ---
-ESlint 
 
-- popular linter 
+ESlint
+
+- popular linter
 - keep code consistent , especially for multi-eng projects
 - cath erros in code
   - using variables before defining
-  - importing from nonexisting file 
+  - importing from nonexisting file
 
+---
+
+not wrapped in act(...) `warning`
+
+- react updated element after test was finished
+- testing library already does this for us+
+  to determinate this error
+
+- determinate what changes after the test is over (async)
+- using `await waitForElementToBeRemove`
+
+---
+
+Mock service worker
+
+- intercept network calls
+- return specific responses
+- prevent nerwork calls during tests
+- set up test conditions using server response
+
+---
+
+Dont get intimidated by huge walls of text
+
+--
+
+passing a mock as a prop
+
+using `jest.fn()`
+
+- jest mock function
+- does not do anything
+- merely a placeholde to avoid errors
+
+example
+
+```jsx
+<ScoopOption
+  name='vanilla'
+  imagePath='/images/vanilla.png'
+  udpateItemCount={jest.fn()}
+/>
+```
+
+what to render ?
+do you need to passs any propos?
+do we need to wrap in?
+where should the tests go?
+what to test?
+how to test?
+do we need to `await`?
