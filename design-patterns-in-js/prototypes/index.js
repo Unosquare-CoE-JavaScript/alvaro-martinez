@@ -28,11 +28,58 @@ class Person {
   toString() {
     return `${this.name} lives at ${this.address}`;
   }
+
+  greet() {
+    console.log(
+      `hi my names is ${this.name}`,
+      `i live at ${this.address.toString()}`
+    );
+  }
+}
+
+class Serializer {
+  constructor(types) {
+    this.types = types;
+  }
+  markRecursive(object) {
+    let idx = this.types.findIndex((t) => {
+      return t.name === object.constructor.name;
+    });
+    if (idx !== -1) {
+      object['typeIndex'] = idx;
+      for (const key in object) {
+        if (Object.hasOwnProperty(key)) {
+          this.markRecursive(object[key]);
+        }
+      }
+    }
+  }
+
+  reconstructRecursive(object) {
+    if (object.hasOwnProperty('typeIndex')) {
+      let type = this.types[object.typeIndex];
+      let obj = new type();
+      for (const key in object) {
+        if (Object.hasOwnProperty(key) && object[key] != null) {
+          obj[key] = this.clone.reconstructRecursive(object[key]);
+        }
+      }
+      delete obj.typeIndex;
+      return obj;
+    }
+    return object;
+  }
+
+  clone(object) {
+    this.markRecursive(object);
+    let copy = JSON.parse(JSON.stringify(object));
+    return this.reconstructRecursive(copy);
+  }
 }
 
 let john = new Person('John', new Address('street', 'london', 'uk'));
 
-let jane = john;
+let jane = JSON.parse(JSON.stringify(john));
 jane.name = 'jane';
 jane.address.street = 'Calle street';
 
