@@ -77,6 +77,12 @@ class Serializer {
   }
 }
 
+class EmployeeFactory {}
+
+EmployeeFactory.serializer = new Serializer([Employee, Address]);
+EmployeeFactory.main = new Employee(null, new Address(null, 'city', 'country'));
+EmployeeFactory.aux = new Employee(null, new Address(null, 'city', 'country'));
+
 let john = new Person('John', new Address('street', 'london', 'uk'));
 
 let jane = JSON.parse(JSON.stringify(john));
