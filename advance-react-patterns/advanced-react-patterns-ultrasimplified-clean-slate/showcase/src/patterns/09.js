@@ -155,6 +155,15 @@ const callFnsInSequence =
     fns.forEach((fn) => fn && fn(...args));
   };
 
+/* custom hook for getting previues state/prop */
+
+const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
 /* custom hook for useClapState */
 
 const useClapState = (initialState = INITIAL_STATE) => {
@@ -169,10 +178,15 @@ const useClapState = (initialState = INITIAL_STATE) => {
       countTotal: count < MAXIMUM_USER_CLAP ? countTotal + 1 : countTotal,
     }));
   }, []);
+  const resetDep = useRef(0);
+  const prevCount = usePrevious(count);
 
   const reset = useCallback(() => {
-    setClapState(userInitialState.current);
-  }, [setClapState]);
+    if (prevCount !== count) {
+      setClapState(userInitialState.current);
+      resetDep.current++;
+    }
+  }, [prevCount, count, setClapState]);
 
   // prop collection for 'click'
   const getTogglerProps = ({ onClick, ...otherProps } = {}) => ({
@@ -196,6 +210,7 @@ const useClapState = (initialState = INITIAL_STATE) => {
     getTogglerProps,
     getCounterProps,
     reset,
+    resetDep,
   };
 };
 
@@ -302,6 +317,7 @@ const Usage = () => {
     getTogglerProps,
     getCounterProps,
     reset,
+    resetDep,
   } = useClapState(userInitialState);
   const { count, countTotal, isClicked } = clapState;
   const [{ clapRef, clapCountRef, ClapTotalRef }, setRef] = useDOMRef();
@@ -315,6 +331,16 @@ const Usage = () => {
   useEffectAfterMount(() => {
     animationTimeline.replay();
   }, [count]);
+
+  const [updatingReset, setUpdatingReset] = useState(false);
+  useEffectAfterMount(() => {
+    setUpdatingReset(true);
+    const id = setTimeout(() => {
+      setUpdatingReset(false);
+    }, 3000);
+
+    return () => clearTimeout(id);
+  }, [resetDep]);
 
   /* const handleClapClick = () => {
     animationTimeline.replay();
@@ -344,6 +370,9 @@ const Usage = () => {
         <button onClick={reset} className={userStyles.resetBtn}>
           reset
         </button>
+        <pre className={userStyles.resetMsg}>
+          {updatingReset ? 'updating reset ' + resetDep : null}
+        </pre>
       </section>
     </div>
   );
