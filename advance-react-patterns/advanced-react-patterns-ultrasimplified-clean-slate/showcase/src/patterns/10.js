@@ -331,22 +331,16 @@ const ClapTotal = ({ countTotal, setRef, ...restProps }) => {
   );
 };
 
-const userInitialState = { count: 20, countTotal: 501, isClicked: true };
+const userInitialState = { count: 0, countTotal: 501, isClicked: true };
 
 const Usage = () => {
-  const reducer = ({ count, countTotal }, { type, payload }) => {
-    switch (type) {
-      case useClapState.types.clap:
-        return {
-          count: count + 1,
-          countTotal: countTotal + 1,
-          isClicked: true,
-        };
-      case useClapState.types.reset:
-        return payload;
-      default:
-        break;
+  const [timesClapped, setTimesClapped] = useState(0);
+  const isClappedTooMuch = timesClapped >= 7;
+  const reducer = (state, action) => {
+    if (action.type === useClapState.types.clap && isClappedTooMuch) {
+      return state;
     }
+    return useClapState.reducer(state, action);
   };
 
   const {
@@ -373,6 +367,7 @@ const Usage = () => {
   const [updatingReset, setUpdatingReset] = useState(false);
   useEffectAfterMount(() => {
     setUpdatingReset(true);
+    setTimesClapped(0);
     const id = setTimeout(() => {
       setUpdatingReset(false);
     }, 3000);
@@ -380,17 +375,19 @@ const Usage = () => {
     return () => clearTimeout(id);
   }, [resetDep]);
 
-  /* const handleClapClick = () => {
-    animationTimeline.replay();
-    updateClapState();
-  }; */
+  const handleClapClick = () => {
+    setTimesClapped((t) => t + 1);
+  };
 
   return (
     <div style={{ width: '100%' }}>
       <ClapContainer
         setRef={setRef}
         data-keyref='clapRef'
-        {...getTogglerProps({ 'aria-pressed': false })}
+        {...getTogglerProps({
+          'aria-pressed': false,
+          onClick: handleClapClick,
+        })}
       >
         <ClapIcon isClicked={isClicked} />
         <ClapCount
