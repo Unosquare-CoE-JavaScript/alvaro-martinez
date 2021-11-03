@@ -3,12 +3,13 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
 } from 'react';
 import styles from './index.css';
 import mojs from '@mojs/core';
 
-const initialState = { count: 0, countTotal: 265, isClicked: false };
+const INITIAL_STATE = { count: 0, countTotal: 265, isClicked: false };
 
 /*
  * Higher Order component
@@ -147,11 +148,42 @@ const wihtClapAnimation = (WrappedComponent) => {
   return WithClapAnimation;
 };
 
-const MediumClap = () => {
-  const MAXIMUM_USER_CLAP = 12;
-  const [clapState, setClapState] = useState(initialState);
-  const { count, countTotal, isClicked } = clapState;
+/* custom hook for useClapState */
 
+const useClapState = (initialState = INITIAL_STATE) => {
+  const MAXIMUM_USER_CLAP = 12;
+
+  const [clapState, setClapState] = useState(initialState);
+
+  const updateClapState = useCallback(() => {
+    setClapState(({ count, countTotal }) => ({
+      isClicked: true,
+      count: Math.min(count + 1, MAXIMUM_USER_CLAP),
+      countTotal: count < MAXIMUM_USER_CLAP ? countTotal + 1 : countTotal,
+    }));
+  }, []);
+
+  return [clapState, updateClapState];
+};
+
+/* custom useEffectAfterMount hook */
+
+const useEffectAfterMount = (cb, deps) => {
+  const componentJustMounted = useRef(true);
+
+  useEffect(() => {
+    if (!componentJustMounted.current) {
+      cb();
+    }
+    componentJustMounted.current = false;
+
+    // return () => { };
+  }, [...deps]);
+};
+
+const MediumClap = () => {
+  const [clapState, updateClapState] = useClapState();
+  const { count, countTotal, isClicked } = clapState;
   const [{ clapRef, clapCountRef, ClapTotalRef }, setRef] = useDOMRef();
 
   const animationTimeline = useClapAnimation({
@@ -160,24 +192,21 @@ const MediumClap = () => {
     totalEl: ClapTotalRef,
   });
 
-  const handleClapClick = () => {
+  useEffectAfterMount(() => {
     animationTimeline.replay();
-    setClapState((prevState) => ({
-      isClicked: true,
-      count: Math.min(count + 1, MAXIMUM_USER_CLAP),
-      countTotal:
-        count < MAXIMUM_USER_CLAP
-          ? prevState.countTotal + 1
-          : prevState.countTotal,
-    }));
-  };
+  }, [count]);
+
+  /* const handleClapClick = () => {
+    animationTimeline.replay();
+    updateClapState();
+  }; */
 
   return (
     <button
       ref={setRef}
       data-keyref='clapRef'
       className={styles.clap}
-      onClick={handleClapClick}
+      onClick={updateClapState}
     >
       <ClapIcon isClicked={isClicked} />
       <ClapCount count={count} setRef={setRef} />
