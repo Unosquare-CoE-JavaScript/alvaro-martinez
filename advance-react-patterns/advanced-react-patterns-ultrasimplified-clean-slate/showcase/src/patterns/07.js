@@ -148,6 +148,12 @@ const wihtClapAnimation = (WrappedComponent) => {
   return WithClapAnimation;
 };
 
+const callFnsInSequence =
+  (...fns) =>
+  (...args) => {
+    fns.forEach((fn) => fn && fn(...args));
+  };
+
 /* custom hook for useClapState */
 
 const useClapState = (initialState = INITIAL_STATE) => {
@@ -164,18 +170,20 @@ const useClapState = (initialState = INITIAL_STATE) => {
   }, []);
 
   // prop collection for 'click'
-  const togglerProps = {
-    onClick: updateClapState,
+  const getTogglerProps = ({ onClick, ...otherProps } = {}) => ({
+    onClick: callFnsInSequence(updateClapState, onClick),
     'aria-pressed': clapState.isClicked,
-  };
+    ...otherProps,
+  });
   // prop collection for 'count'
-  const counterProps = {
+  const getCounterProps = ({ ...otherProps }) => ({
     count,
     'aria-valuemax': MAXIMUM_USER_CLAP,
     'aria-valuemin': 0,
     'aria-valuenow': count,
-  };
-  return { clapState, updateClapState, togglerProps, counterProps };
+    ...otherProps,
+  });
+  return { clapState, updateClapState, getTogglerProps, getCounterProps };
 };
 
 /* custom useEffectAfterMount hook */
@@ -273,7 +281,7 @@ const ClapTotal = ({ countTotal, setRef, ...restProps }) => {
 };
 
 const Usage = () => {
-  const { clapState, updateClapState, togglerProps, counterProps } =
+  const { clapState, updateClapState, getTogglerProps, getCounterProps } =
     useClapState();
   const { count, countTotal, isClicked } = clapState;
   const [{ clapRef, clapCountRef, ClapTotalRef }, setRef] = useDOMRef();
@@ -294,9 +302,17 @@ const Usage = () => {
   }; */
 
   return (
-    <ClapContainer setRef={setRef} data-keyref='clapRef' {...togglerProps}>
+    <ClapContainer
+      setRef={setRef}
+      data-keyref='clapRef'
+      {...getTogglerProps({ 'aria-pressed': false })}
+    >
       <ClapIcon isClicked={isClicked} />
-      <ClapCount {...counterProps} setRef={setRef} data-refkey='clapCountRef' />
+      <ClapCount
+        setRef={setRef}
+        data-refkey='clapCountRef'
+        {...getCounterProps()}
+      />
       <ClapTotal
         countTotal={countTotal}
         setRef={setRef}
