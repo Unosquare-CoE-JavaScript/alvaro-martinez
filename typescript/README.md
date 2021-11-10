@@ -33,3 +33,13 @@ const product = {
   }
 }
 ```
+
+Type Aliases & Object Types
+
+Type aliases can be used to "create" your own types.
+also provide an alias to complex types
+
+```typescript
+type User = { name: string; age: number };
+const u1: User = { name: 'Max', age: 30 }; // this works!
+```
